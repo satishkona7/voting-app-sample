@@ -1,4 +1,4 @@
-var app = angular.module('Aws vs Azure', []);
+var app = angular.module('Cats vs Dogs', []);
 var socket = io.connect();
 
 var bg1 = document.getElementById('background-stats-1');
