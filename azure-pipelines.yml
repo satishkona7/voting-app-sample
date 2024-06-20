@@ -12,9 +12,9 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'bcbdba2c-d6b6-4964-a708-7d956712c6a8'
+  dockerRegistryServiceConnection: 'acr'
   imageRepository: 'voting'
-  containerRegistry: 'acrprojectn.azurecr.io'
+  containerRegistry: 'add056.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/result/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -31,7 +31,7 @@ stages:
     - task: Docker@2
       displayName: Build 
       inputs:
-        containerRegistry: 'acrprojectn'
+        containerRegistry: 'acr'
         repository: '$(imageRepository)'
         command: 'build'
         Dockerfile: 'result/Dockerfile'
@@ -52,7 +52,12 @@ stages:
 - stage: pudate
   displayName: update 
   jobs:
-  - job: update
-    displayName: update
-    steps:
-    - task: ShellScript@2
+    - job: DeployJob
+      displayName: 'Update Deployment and Apply'
+      steps:
+      - task: Checkout@1
+
+      - script: |
+          echo "Updating deployment file with new image tag..."
+          sed -i 's#$(imageName):.*#$(imageName):$(Build.BuildId)#' $(deploymentFilePath)
+        displayName: 'Update Deployment File'
